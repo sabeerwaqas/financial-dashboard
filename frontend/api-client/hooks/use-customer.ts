@@ -41,16 +41,10 @@ export function useCustomer({ shouldDefaultFetch = true }): UseCustomerState {
     setIsLoading(true);
     setError(null);
 
-    try {
-      const response: CustomerResponse[] = await getAllCustomers();
-      setCustomers(response);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch customers data",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    const response: CustomerResponse[] = await getAllCustomers();
+    setCustomers(response);
+
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {

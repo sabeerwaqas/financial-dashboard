@@ -263,7 +263,7 @@ export function CustomersTableSkeleton() {
             <InvoicesMobileSkeleton />
             <InvoicesMobileSkeleton />
           </div>
-          <table className="hidden min-w-full rounded-md text-gray-900 md:table">
+          <table className="hidden min-w-full table-fixed rounded-md text-gray-900 md:table">
             <thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">

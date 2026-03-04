@@ -6,7 +6,6 @@ import {
   CustomersTableSkeleton,
   lusitana,
   Search,
-  TableRowSkeleton,
 } from "@/component";
 
 export default function Page() {
