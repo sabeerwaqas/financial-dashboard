@@ -7,9 +7,16 @@ import {
   lusitana,
   Search,
 } from "@/component";
+import { useEffect } from "react";
 
 export default function Page() {
-  const { customers, isLoading } = useCustomer({ shouldDefaultFetch: true });
+  const { customers, fetchCustomers, isLoading } = useCustomer({
+    shouldDefaultFetch: false,
+  });
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   function CustomerTableData({ customers }: { customers: CustomerResponse[] }) {
     if (isLoading) {

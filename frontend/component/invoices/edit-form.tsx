@@ -8,76 +8,89 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Button } from "@/component/button";
-import { useActionState, useEffect, useState } from "react";
-import {
-  CustomerResponse,
-  InvoiceRequest,
-  InvoiceResponse,
-  useCustomer,
-  useInvoice,
-} from "@/api-client";
+import { useEffect, useState } from "react";
+import { InvoiceResponse, useInvoice } from "@/api-client";
+import { useRouter } from "next/navigation";
 
 export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
   const { updateUserInvoice, fetchInvoiceById } = useInvoice({
     shouldDefaultFetch: false,
   });
-  const { customers } = useCustomer({ shouldDefaultFetch: false });
+
   const [invoice, setInvoice] = useState<InvoiceResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const loadInvoice = async () => {
+      if (!invoiceId) return;
+
+      const data = await fetchInvoiceById(invoiceId);
+      if (data) {
+        setInvoice(data);
+      }
+
+      setLoading(false);
+    };
+
+    loadInvoice();
+  }, [invoiceId, fetchInvoiceById]);
 
   const formAction = async (formData: FormData) => {
+    if (!invoice) return;
+
     const customerId = formData.get("customerId") as string;
-    const amount = parseFloat(formData.get("amount") as string);
+    const amount = formData.get("amount") as string;
     const status = formData.get("status") as string;
 
     const success = await updateUserInvoice({
-      invoiceId: invoice?.invoiceId as string,
+      invoiceId: invoice.invoiceId,
       customer_id: customerId,
-      amount: amount.toString(),
-      status: status,
+      amount,
+      status,
     });
 
     if (!success) {
       throw new Error("Failed to update invoice");
     }
+
+    router.push("/dashboard/invoices");
   };
 
-  useEffect(() => {
-    const loadInvoice = async () => {
-      if (invoiceId) {
-        const data = await fetchInvoiceById(`${invoiceId}`);
-        if (data) {
-          setInvoice(data);
-        }
-      }
-    };
-    loadInvoice();
-  }, []);
+  if (loading) {
+    return <div className="p-6 text-sm text-gray-500">Loading invoice...</div>;
+  }
+
+  if (!invoice) {
+    return (
+      <div className="p-6 text-sm text-red-500">Unable to load invoice.</div>
+    );
+  }
 
   return (
     <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* Customer Name */}
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
             Choose customer
           </label>
+
           <div className="relative">
             <select
               id="customer"
               name="customerId"
+              defaultValue={invoice.customer_id}
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={invoice?.customer_id}
-              aria-describedby="customer-error"
             >
               <option value="" disabled>
                 Select a customer
               </option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
-                </option>
-              ))}
+
+              <option value={invoice.customer_id}>
+                {invoice.customerName}
+              </option>
             </select>
+
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
         </div>
@@ -86,20 +99,19 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
           <label htmlFor="amount" className="mb-2 block text-sm font-medium">
             Choose an amount
           </label>
+
           <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="amount"
-                name="amount"
-                type="number"
-                defaultValue={invoice?.amount}
-                step="0.01"
-                placeholder="Enter USD amount"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby="amount-error"
-              />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
+            <input
+              id="amount"
+              name="amount"
+              type="number"
+              step="0.01"
+              defaultValue={invoice.amount}
+              placeholder="Enter USD amount"
+              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+            />
+
+            <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
         </div>
 
@@ -107,6 +119,7 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
           <legend className="mb-2 block text-sm font-medium">
             Set the invoice status
           </legend>
+
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
@@ -115,9 +128,10 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
                   name="status"
                   type="radio"
                   value="pending"
-                  defaultChecked={invoice?.status === "pending"}
+                  defaultChecked={invoice.status === "pending"}
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
+
                 <label
                   htmlFor="pending"
                   className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
@@ -125,15 +139,17 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
                   Pending <ClockIcon className="h-4 w-4" />
                 </label>
               </div>
+
               <div className="flex items-center">
                 <input
                   id="paid"
                   name="status"
                   type="radio"
                   value="paid"
-                  defaultChecked={invoice?.status === "paid"}
+                  defaultChecked={invoice.status === "paid"}
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
+
                 <label
                   htmlFor="paid"
                   className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
@@ -145,6 +161,7 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
           </div>
         </fieldset>
       </div>
+
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/dashboard/invoices"
@@ -152,6 +169,7 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
         >
           Cancel
         </Link>
+
         <Button
           type="submit"
           buttonType="button"

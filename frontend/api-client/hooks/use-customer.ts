@@ -51,7 +51,6 @@ export function useCustomer({ shouldDefaultFetch = true }): UseCustomerState {
     if (shouldDefaultFetch) {
       fetchTotalCustomers();
     }
-    fetchAllCustomers();
   }, [fetchTotalCustomers]);
 
   return {
