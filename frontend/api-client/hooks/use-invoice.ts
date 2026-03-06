@@ -35,7 +35,11 @@ interface UseInvoiceState {
   fetchInvoiceById: (invoiceId: string) => Promise<InvoiceResponse | void>;
 }
 
-export function useInvoice({ shouldDefaultFetch = false }): UseInvoiceState {
+export function useInvoice({
+  shouldDefaultFetch = false,
+}: {
+  shouldDefaultFetch?: boolean;
+}): UseInvoiceState {
   const [pendingAmount, setPendingAmount] = useState<number>(0);
   const [paidAmount, setPaidAmount] = useState<number>(0);
   const [totalInvoices, setTotalInvoices] = useState<number>(0);
