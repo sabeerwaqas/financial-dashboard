@@ -30,18 +30,6 @@ public class InvoiceService {
         this.customerRepository = customerRepository;
     }
 
-    public InvoiceDTO addInvoice(InvoiceDTO dto) {
-
-        CustomerEntity customer = customerRepository.findById(dto.customer_id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Customer not found"));
-
-        InvoiceEntity entity = InvoiceMapper.toEntity(dto, customer);
-        InvoiceEntity saved = repository.save(entity);
-
-        return InvoiceMapper.toDTO(saved);
-    }
-
     public List<InvoiceDTO> getInvoices() {
         return repository.findAll()
                 .stream().map(InvoiceMapper::toDTO)
@@ -75,6 +63,18 @@ public class InvoiceService {
                 .divide(BigDecimal.valueOf(100));
 
         return new PaidAmountDTO(paidAmountInDollars);
+    }
+
+    public InvoiceDTO addInvoice(InvoiceDTO dto) {
+
+        CustomerEntity customer = customerRepository.findById(dto.customer_id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Customer not found"));
+
+        InvoiceEntity entity = InvoiceMapper.toEntity(dto, customer);
+        InvoiceEntity saved = repository.save(entity);
+
+        return InvoiceMapper.toDTO(saved);
     }
 
     public InvoiceDTO updateInvoice(InvoiceDTO dto) {
