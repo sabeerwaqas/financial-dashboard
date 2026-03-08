@@ -18,6 +18,8 @@ public class InvoiceDTO {
 
     public UUID invoiceId;
 
+    public String customerImage;
+
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be greater than 0")
     public Integer amount;
@@ -67,6 +69,14 @@ public class InvoiceDTO {
         this.amount = amount;
     }
 
+    public String getImage_url() {
+        return this.customerImage;
+    }
+
+    public void setImage_url(String image_url) {
+        this.customerImage = image_url;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -82,5 +92,6 @@ public class InvoiceDTO {
     public void setDate(Date date) {
         this.date = date;
     }
+
 }
 

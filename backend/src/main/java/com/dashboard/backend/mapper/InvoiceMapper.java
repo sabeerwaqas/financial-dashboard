@@ -4,8 +4,6 @@ import com.dashboard.backend.dto.InvoiceDTO;
 import com.dashboard.backend.entity.CustomerEntity;
 import com.dashboard.backend.entity.InvoiceEntity;
 
-import java.util.UUID;
-
 public class InvoiceMapper {
 
     public static InvoiceEntity toEntity(InvoiceDTO dto, CustomerEntity customer) {
@@ -28,6 +26,7 @@ public class InvoiceMapper {
         dto.customer_id = customer.getId();
         dto.customerName = customer.getName();
         dto.customerEmail = customer.getEmail();
+        dto.customerImage = customer.getImageUrl();
 
         return dto;
     }
