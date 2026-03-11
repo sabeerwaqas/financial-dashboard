@@ -25,6 +25,7 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
     const loadInvoice = async () => {
       if (!invoiceId) return;
 
+      setLoading(true);
       const data = await fetchInvoiceById(invoiceId);
       if (data) {
         setInvoice(data);
@@ -57,13 +58,9 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
     router.push("/dashboard/invoices");
   };
 
-  if (loading) {
-    return <div className="p-6 text-sm text-gray-500">Loading invoice...</div>;
-  }
-
-  if (!invoice) {
+  if (loading || !invoice) {
     return (
-      <div className="p-6 text-sm text-red-500">Unable to load invoice.</div>
+      <div className="bg-gray-50 w-full h-[300px] rounded-lg animate-pulse" />
     );
   }
 
