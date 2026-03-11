@@ -14,7 +14,6 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
-// --- Types ---
 type ToastType = "success" | "error" | "info" | "warning";
 
 interface Toast {
@@ -30,7 +29,6 @@ interface ToastContextType {
   warning: (msg: string, duration?: number) => void;
 }
 
-// --- Context Setup ---
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
@@ -49,7 +47,6 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
 
-  // Mapping the helper functions
   const toastHelpers: ToastContextType = {
     success: (msg, dur) => addToast(msg, "success", dur),
     error: (msg, dur) => addToast(msg, "error", dur),
@@ -81,7 +78,6 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     <ToastContext.Provider value={toastHelpers}>
       {children}
 
-      {/* Container for Toasts */}
       <div className="fixed top-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none">
         {toasts.map((toast) => (
           <div
@@ -107,7 +103,6 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// --- Custom Hook ---
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {

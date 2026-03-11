@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 export const CreateForm = () => {
   const { createUserInvoice } = useInvoice({ shouldDefaultFetch: false });
-  const { customers, fetchCustomers } = useCustomer({
+  const { customers, fetchCustomers, isLoading } = useCustomer({
     shouldDefaultFetch: false,
   });
 
@@ -40,6 +40,12 @@ export const CreateForm = () => {
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 w-full h-[300px] rounded-lg animate-pulse" />
+    );
+  }
 
   return (
     <form action={formAction}>
