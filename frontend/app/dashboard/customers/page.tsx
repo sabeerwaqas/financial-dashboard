@@ -7,12 +7,21 @@ import {
   lusitana,
   Search,
 } from "@/component";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Page() {
   const { customers, fetchCustomers, isLoading } = useCustomer({
     shouldDefaultFetch: false,
   });
+
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
+
+  const filteredCustomers =
+    customers.filter((customer) =>
+      customer.name.toLowerCase().includes(query.toLowerCase()),
+    ) || customers;
 
   useEffect(() => {
     fetchCustomers();
@@ -32,7 +41,7 @@ export default function Page() {
         Customers
       </h1>
       <Search placeholder="Search customers..." />
-      <CustomerTableData customers={customers} />
+      <CustomerTableData customers={filteredCustomers} />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
 import { InvoiceResponse, useInvoice } from "@/api-client";
 import { useEffect, useState } from "react";
 import { useToast } from "@/context/use-context";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
   const { fetchInvoices, deleteInvoice, isLoading } = useInvoice({
@@ -21,6 +22,14 @@ export default function Page() {
   const [invoices, setInvoices] = useState<InvoiceResponse[]>([]);
 
   const { toast } = useToast();
+
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
+
+  const filteredInvoices =
+    invoices.filter((invoice) =>
+      invoice.customerName.toLowerCase().includes(query.toLowerCase()),
+    ) || invoices;
 
   const loadInvoices = async () => {
     const data = await fetchInvoices();
@@ -62,7 +71,7 @@ export default function Page() {
       </div>
 
       <InvoiceTableData
-        invoices={invoices}
+        invoices={filteredInvoices}
         onDelete={handleDelete}
         isLoading={isLoading}
       />

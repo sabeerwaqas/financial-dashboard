@@ -1,3 +1,7 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
+
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString("en-US", {
     style: "currency",
