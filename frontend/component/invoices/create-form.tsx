@@ -12,12 +12,16 @@ import { Button } from "@/component/button";
 import { useCustomer, useInvoice } from "@/api-client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/context/use-context";
 
 export const CreateForm = () => {
-  const { createUserInvoice } = useInvoice({ shouldDefaultFetch: false });
+  const { createUserInvoice, isLoading: invoiceLoading } = useInvoice({
+    shouldDefaultFetch: false,
+  });
   const { customers, fetchCustomers, isLoading } = useCustomer({
     shouldDefaultFetch: false,
   });
+  const { toast } = useToast();
   const [invoiceData, setInvoiceData] = useState<{
     customer_id: string;
     amount: string;
@@ -26,11 +30,12 @@ export const CreateForm = () => {
 
   const router = useRouter();
   const isButtonEnabled =
-    invoiceData?.customer_id && invoiceData?.amount && invoiceData?.status
-      ? true
-      : false;
+    Boolean(
+      invoiceData?.customer_id && invoiceData?.amount && invoiceData?.status,
+    ) && !invoiceLoading;
 
-  const formAction = async () => {
+  const formAction = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (
       invoiceData?.customer_id &&
       invoiceData?.amount &&
@@ -42,6 +47,7 @@ export const CreateForm = () => {
         status: invoiceData?.status,
       });
       if (success) {
+        toast.success("Invoice created successfully");
         router.push("/dashboard/invoices");
       }
     }
@@ -58,7 +64,7 @@ export const CreateForm = () => {
   }
 
   return (
-    <form action={formAction}>
+    <form onSubmit={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
@@ -183,8 +189,7 @@ export const CreateForm = () => {
           className="bg-blue-600 hover:bg-blue-500"
           disabled={!isButtonEnabled}
         >
-          Create Invoice
-          <PlusIcon className="h-5 md:ml-4" />
+          {invoiceLoading ? "Creating Invoice..." : "Create Invoice"}
         </Button>
       </div>
     </form>

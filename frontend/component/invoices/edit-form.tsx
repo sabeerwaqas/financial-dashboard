@@ -11,11 +11,13 @@ import { Button } from "@/component/button";
 import { useEffect, useState } from "react";
 import { InvoiceResponse, useInvoice } from "@/api-client";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/context/use-context";
 
 export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
-  const { updateUserInvoice, fetchInvoiceById } = useInvoice({
+  const { updateUserInvoice, fetchInvoiceById, isLoading: isUpdating } = useInvoice({
     shouldDefaultFetch: false,
   });
+  const { toast } = useToast();
 
   const [invoice, setInvoice] = useState<InvoiceResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,8 +39,11 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
     loadInvoice();
   }, [invoiceId, fetchInvoiceById]);
 
-  const formAction = async (formData: FormData) => {
+  const formAction = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!invoice) return;
+
+    const formData = new FormData(e.currentTarget);
 
     const customerId = formData.get("customerId") as string;
     const amount = formData.get("amount") as string;
@@ -52,9 +57,11 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
     });
 
     if (!success) {
+      toast.error("Failed to update invoice");
       throw new Error("Failed to update invoice");
     }
 
+    toast.success("Invoice updated successfully");
     router.push("/dashboard/invoices");
   };
 
@@ -65,7 +72,7 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
   }
 
   return (
-    <form action={formAction}>
+    <form onSubmit={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
@@ -171,8 +178,9 @@ export const EditInvoiceForm = ({ invoiceId }: { invoiceId: string }) => {
           type="submit"
           buttonType="button"
           className="transition-colors hover:bg-blue-500"
+          disabled={isUpdating}
         >
-          Edit Invoice
+          {isUpdating ? "Editing Invoice..." : "Edit Invoice"}
         </Button>
       </div>
     </form>
