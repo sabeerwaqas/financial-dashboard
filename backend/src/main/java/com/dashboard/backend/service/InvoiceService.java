@@ -10,9 +10,7 @@ import com.dashboard.backend.exception.ResourceNotFoundException;
 import com.dashboard.backend.mapper.InvoiceMapper;
 import com.dashboard.backend.repository.CustomerRepository;
 import com.dashboard.backend.repository.InvoiceRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +44,7 @@ public class InvoiceService {
         }
     }
 
-    public InvoiceCountDTO getInvoicesCount() {
+    public InvoiceCountDTO getTotalInvoices() {
         return new InvoiceCountDTO(repository.count());
     }
 
@@ -70,11 +68,10 @@ public class InvoiceService {
     public InvoiceDTO updateInvoice(InvoiceDTO dto) {
 
         CustomerEntity customer = customerRepository.findById(dto.customer_id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         InvoiceEntity entity = (InvoiceEntity) repository.findById(dto.invoiceId)
-                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
         entity.setAmount(dto.amount);
         entity.setStatus(dto.status);
 

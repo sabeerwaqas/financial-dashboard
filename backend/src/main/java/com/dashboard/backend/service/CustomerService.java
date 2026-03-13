@@ -20,10 +20,11 @@ public class CustomerService {
     }
 
     public List<CustomerDTO> getAllCustomers() {
-        return customerRepository.findAll()
+        List<CustomerDTO> customers = customerRepository.findAll()
                 .stream()
                 .map(CustomerMapper::toDTO)
                 .collect(Collectors.toList());
+        return customers;
     }
 
     public CustomerCountDTO getCustomersCount() {

@@ -54,7 +54,7 @@ public class InvoiceController {
 
     @GetMapping("/count")
     public ResponseEntity<ApiResponse<InvoiceCountDTO>> getTotalInvoices() {
-        InvoiceCountDTO invoiceCount = service.getInvoicesCount();
+        InvoiceCountDTO invoiceCount = service.getTotalInvoices();
         ApiResponse<InvoiceCountDTO> response = new ApiResponse<InvoiceCountDTO>(true, HttpStatus.OK.value(), "Invoice count fetched successfully", invoiceCount);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -81,7 +81,7 @@ public class InvoiceController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<InvoiceDTO>> updateEntity(@Valid @RequestBody InvoiceDTO dto) {
+    public ResponseEntity<ApiResponse<InvoiceDTO>> updateInvoice(@Valid @RequestBody InvoiceDTO dto) {
         InvoiceDTO updatedInvoice = service.updateInvoice(dto);
         ApiResponse<InvoiceDTO> response = new ApiResponse<InvoiceDTO>(true, HttpStatus.OK.value(), "Invoice updated successfully.", updatedInvoice);
         return ResponseEntity.status(HttpStatus.OK).body(response);
