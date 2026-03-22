@@ -2,8 +2,6 @@
   "git": {
     "deploymentEnabled": true
   },
-  {
   "source": "/(.*)",
   "destination": "/index.html"
-}
 }
