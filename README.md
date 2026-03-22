@@ -1,6 +1,6 @@
-# Full Stack Practice Project
+# Financial Dashboard
 
-A full-stack web application practice project consisting of a frontend interface and a backend API.
+A full-stack financial dashboard project consisting of a frontend interface and a backend API.
 
 ## 🚀 Technologies Used
 
